@@ -10,20 +10,6 @@
       "breakpoints": true
     },
     {
-      "idx": 1,
-      "version": "7",
-      "when": 1726217872422,
-      "tag": "0001_breezy_lila_cheney",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726217924454,
-      "tag": "0002_complete_sharon_ventura",
-      "breakpoints": true
-    },
-    {
       "idx": 3,
       "version": "7",
       "when": 1726218322134,
