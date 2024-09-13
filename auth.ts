@@ -1,5 +1,5 @@
 import { env } from "~/env";
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import Github from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "~/server/db";
@@ -9,7 +9,6 @@ import {
   users,
   verificationTokens,
 } from "~/server/db/schema";
-import { Adapter } from "next-auth/adapters";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
@@ -29,7 +28,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
-  }) as Adapter,
+  }),
   providers: [
     Github({
       clientId: env.GITHUB_CLIENT_ID,
@@ -37,3 +36,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
 });
+
+declare module "next-auth" {
+  interface Session {
+    user: DefaultSession["user"] & {
+      id: string;
+    };
+  }
+}
