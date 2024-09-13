@@ -50,7 +50,6 @@ export const projects = createTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     color: varchar("colortemp", { length: 255 }),
-    pet: varchar("pet", { length: 255 }),
     name: varchar("name", { length: 256 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
