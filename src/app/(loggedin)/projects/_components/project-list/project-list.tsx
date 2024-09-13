@@ -1,6 +1,6 @@
-import { getThing } from "~/server/api/test";
 import { Wrapper } from "./_ui";
 import { ProjectListItem } from "./_components/project-list-item/project-list-item";
+import { getThing } from "~/server/api/test";
 
 export async function ProjectList() {
   const data = await getThing();
