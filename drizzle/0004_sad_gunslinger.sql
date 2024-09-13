@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_project" ADD COLUMN "pet" varchar(255);
