@@ -1,12 +1,15 @@
-// middleware.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const redirectPage = "/auth/login";
+const isProd = process.env.NODE_ENV === "production";
+const COOKIE_NAME = isProd
+  ? "__Secure-authjs.session-token"
+  : "authjs.session-token";
 
 export async function middleware(req: NextRequest) {
   const cookies = req.cookies;
-  const sessionToken = cookies.get("authjs.session-token");
+  const sessionToken = cookies.get(COOKIE_NAME);
 
   // Helper function to build the login URL with callbackUrl parameter
   const buildLoginUrl = () => {
@@ -36,7 +39,7 @@ export async function middleware(req: NextRequest) {
     }
   } catch (error) {
     const response = NextResponse.redirect(buildLoginUrl());
-    response.cookies.set("authjs.session-token", "", {
+    response.cookies.set(COOKIE_NAME, "", {
       expires: new Date(0), // Expire the cookie immediately
     });
     return response;
