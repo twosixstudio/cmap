@@ -29,6 +29,8 @@ export default function SignInPage() {
   // Display the sign-in UI if the user is not authenticated
   return (
     <div>
+      status:
+      {JSON.stringify({ status })}
       <h1>Sign In</h1>
       {/* Your custom sign-in UI */}
       {/* <button onClick={() => signIn("github", { callbackUrl })}>
