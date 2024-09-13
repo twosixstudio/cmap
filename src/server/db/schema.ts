@@ -7,7 +7,6 @@ import {
   serial,
   text,
   timestamp,
-  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
@@ -49,8 +48,8 @@ export const projects = createTable(
       .notNull()
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    color: varchar("color", { length: 255 }),
     name: varchar("name", { length: 256 }),
+    subtitle: varchar("subtitle", { length: 256 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

@@ -1,4 +1,5 @@
 "use server";
+import { auth } from "auth";
 import { db } from "../db";
 import { projects, ProjectUserTable } from "../db/schema";
 
@@ -33,13 +34,18 @@ export type ProjectWithOwners = Project & {
 // Define the function to create a project with multiple owners
 export async function createProject(
   name: string,
-  userId: string,
+  subtitle: string,
 ): Promise<{ message: string } | undefined> {
   try {
+    const session = await auth();
+    const userId = session.user.id;
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
     // Insert a new project and return the ID
     const projectList = await db
       .insert(projects)
-      .values({ name })
+      .values({ name, subtitle })
       .returning({ id: projects.id });
 
     console.log(projectList, "-------");
@@ -65,7 +71,6 @@ export async function createProject(
     return { message: "ok" };
   } catch (error) {
     // Log or handle the error appropriately
-    console.error("Error creating project:", error);
     return { message: "Failed to create project" };
   }
 }

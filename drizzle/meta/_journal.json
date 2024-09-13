@@ -36,6 +36,13 @@
       "when": 1726219968978,
       "tag": "0006_worried_wong",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1726247287140,
+      "tag": "0007_tranquil_nova",
+      "breakpoints": true
     }
   ]
 }
