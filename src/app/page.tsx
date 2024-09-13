@@ -2,7 +2,6 @@ import Link from "next/link";
 import { createProjectAction } from "~/server/api/actions";
 import { getServerAuthSession } from "~/server/auth";
 import { PageClient } from "./page.client";
-import { getThing } from "~/server/api/test";
 
 export default async function HomePage() {
   const session = await getServerAuthSession();
@@ -14,7 +13,9 @@ export default async function HomePage() {
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <div className="flex flex-col items-center justify-center gap-4">
           <p className="text-center text-2xl text-white">
-            {session && <span>Logged in as {session.user?.name}</span>}
+            {session && (
+              <span>Logged some change in as {session.user?.name}</span>
+            )}
           </p>
           <Link
             href={session ? "/api/auth/signout" : "/api/auth/signin"}
