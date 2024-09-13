@@ -12,8 +12,19 @@ export function PageClient() {
     | {
         id: string;
         name: string | null;
-        createdAt: Date;
-        updatedAt: Date | null;
+        email: string;
+        emailVerified: Date | null;
+        image: string | null;
+        projects: {
+          projectId: string;
+          userId: string;
+          project: {
+            id: string;
+            name: string | null;
+            createdAt: Date;
+            updatedAt: Date | null;
+          };
+        }[];
       }[]
     | undefined
   >();
