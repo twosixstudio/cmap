@@ -1,23 +1,25 @@
 // app/signin/page.tsx
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 // import { useRouter, useSearchParams } from "next/navigation";
 // import { useEffect } from "react";
 
 export default function SignInPage() {
-  //   const { data: session, status } = useSession();
-  //   const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
 
-  //   useEffect(() => {
-  //     console.log("hello", callbackUrl, session);
-  //     if (status === "authenticated") {
-  //       // User is authenticated, redirect them
-  //       router.replace(callbackUrl);
-  //     }
-  //   }, [status, router, callbackUrl]);
+  useEffect(() => {
+    console.log("hello", callbackUrl, session);
+    if (status === "authenticated") {
+      // User is authenticated, redirect them
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
 
   //   if (status === "authenticated") {
   //     // Optional: Return null or a loading state while redirecting
@@ -32,7 +34,9 @@ export default function SignInPage() {
       {/* <button onClick={() => signIn("github", { callbackUrl })}>
         Sign in with GitHub
       </button> */}
-      <button onClick={() => signIn("github")}>Sign in with GitHub</button>
+      <button onClick={() => signIn("github", { callbackUrl })}>
+        Sign in with GitHub
+      </button>
     </div>
   );
 }

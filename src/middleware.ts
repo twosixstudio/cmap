@@ -8,12 +8,19 @@ export async function middleware(req: NextRequest) {
   const cookies = req.cookies;
   const sessionToken = cookies.get("authjs.session-token");
 
-  // If session token is not present, redirect to login
+  // Helper function to build the login URL with callbackUrl parameter
+  const buildLoginUrl = () => {
+    const loginUrl = new URL(redirectPage, req.url);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.href);
+    return loginUrl;
+  };
+
+  // If session token is not present, redirect to login with callbackUrl
   if (!sessionToken) {
-    return NextResponse.redirect(new URL(redirectPage, req.url));
+    return NextResponse.redirect(buildLoginUrl());
   }
 
-  // Optional: If you need to validate the session token further with an API call
+  // Optional: Validate the session token with an API call
   try {
     const sessionResponse = await fetch(
       `${req.nextUrl.origin}/api/auth/session`,
@@ -28,7 +35,7 @@ export async function middleware(req: NextRequest) {
       throw new Error("Session not found");
     }
   } catch (error) {
-    const response = NextResponse.redirect(new URL(redirectPage, req.url));
+    const response = NextResponse.redirect(buildLoginUrl());
     response.cookies.set("authjs.session-token", "", {
       expires: new Date(0), // Expire the cookie immediately
     });
@@ -38,7 +45,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// If you want this middleware to apply to specific routes
+// Apply middleware to specific routes
 export const config = {
   matcher: ["/projects/:path*", "/"],
 };
