@@ -3,10 +3,11 @@
 import { count, eq } from "drizzle-orm";
 import { db } from "../db";
 import { projects, ProjectUserTable, users } from "../db/schema";
-import { getServerAuthSession } from "../auth";
+import { auth } from "auth";
+// import { getServerAuthSession } from "../auth";
 
 export async function getThing() {
-  const session = await getServerAuthSession();
+  const session = await auth();
   if (!session) throw Error("Oh no");
   try {
     // await db.select({ count: sql`count(*)`.mapWith(Number) }).from(products);
@@ -24,7 +25,6 @@ export async function getThing() {
     //     .as('projects'), // Alias the subquery as 'projects'
     // })
     // .from(users);
-
     const res = await db.query.users.findMany({
       // Select all fields from the projects table
       where: (table, funcs) => funcs.eq(table.id, session.user.id),
