@@ -38,14 +38,14 @@ export async function createProject(
 ): Promise<{ message: string } | undefined> {
   try {
     const session = await auth();
-    const userId = session.user.id;
-    if (!userId) {
+    const userId = session?.user?.id;
+    if (!session || !userId) {
       throw new Error("Not authenticated");
     }
     // Insert a new project and return the ID
     const projectList = await db
       .insert(projects)
-      .values({ name, subtitle })
+      .values({ name })
       .returning({ id: projects.id });
 
     console.log(projectList, "-------");

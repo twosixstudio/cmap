@@ -21,9 +21,9 @@ export default async function HomePage() {
       <div>
         {data?.map((x) =>
           x.projects.map((y) => (
-            <Link href={`/projects/${y.projectId}`}>
-              <p key={y.projectId}>
-                {y.project.name} | {y.project.subtitle}
+            <Link key={y.projectId} href={`/projects/${y.projectId}`}>
+              <p>
+                {y.project.name} |{/* {y.project.subtitle} */}
               </p>
             </Link>
           )),

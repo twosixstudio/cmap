@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
       `${req.nextUrl.origin}/api/auth/session`,
       {
         headers: {
-          cookie: req.headers.get("cookie") || "", // Pass cookies to the API route
+          cookie: req.headers.get("cookie") ?? "", // Pass cookies to the API route
         },
       },
     );

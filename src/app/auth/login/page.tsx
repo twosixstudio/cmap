@@ -1,15 +1,15 @@
 // app/signin/page.tsx
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { signIn } from "next-auth/react";
+// import { useRouter, useSearchParams } from "next/navigation";
+// import { useEffect } from "react";
 
 export default function SignInPage() {
   //   const { data: session, status } = useSession();
   //   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  // const searchParams = useSearchParams();
+  // const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   //   useEffect(() => {
   //     console.log("hello", callbackUrl, session);
@@ -29,10 +29,10 @@ export default function SignInPage() {
     <div>
       <h1>Sign In</h1>
       {/* Your custom sign-in UI */}
-      <button onClick={() => signIn("github", { callbackUrl })}>
+      {/* <button onClick={() => signIn("github", { callbackUrl })}>
         Sign in with GitHub
-      </button>
-      {/* <button onClick={() => signIn("github")}>Sign in with GitHub</button> */}
+      </button> */}
+      <button onClick={() => signIn("github")}>Sign in with GitHub</button>
     </div>
   );
 }
