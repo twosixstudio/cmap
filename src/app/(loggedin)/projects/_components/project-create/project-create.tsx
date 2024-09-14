@@ -12,7 +12,7 @@ export function ProjectCreate() {
   const form = useForm<FormProps>({ defaultValues: { name: "" } });
 
   async function onSubmit(data: FormProps) {
-    await createProject(data.name, "");
+    await createProject(data.name);
     form.reset();
     router.refresh();
   }

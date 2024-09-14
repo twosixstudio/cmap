@@ -1,7 +1,7 @@
 "use server";
 import { db } from "../db";
 import { auth } from "auth";
-import { ProjectUserTable, users } from "../db/schema";
+import { ProjectUserTable } from "../db/schema";
 
 export async function getThing() {
   try {
