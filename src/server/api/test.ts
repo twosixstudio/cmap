@@ -40,6 +40,17 @@ export async function inviteUserToProject(
 export async function getUsers() {
   return await db.query.users.findMany();
 }
+
+export async function getProject(id: string) {
+  return await db.query.projects.findFirst({
+    where: (table, fn) => fn.eq(table.id, id),
+    with: {
+      users: {
+        with: { user: true },
+      },
+    },
+  });
+}
 // "use server";
 
 // import { count, eq } from "drizzle-orm";
