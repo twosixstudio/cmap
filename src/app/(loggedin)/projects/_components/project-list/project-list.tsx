@@ -6,8 +6,8 @@ export async function ProjectList() {
   const data = await getThing();
   return (
     <Wrapper>
-      {data?.[0]?.projects.map(({ project }) => (
-        <ProjectListItem key={project.id} {...project} />
+      {data?.[0]?.projects.map(({ role, project }) => (
+        <ProjectListItem key={project.id} {...project} role={role} />
       ))}
     </Wrapper>
   );

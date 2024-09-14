@@ -24,7 +24,7 @@ export function PageClient() {
       <button
         className="bg-red-200"
         onClick={async () => {
-          await createProject(name, subtitle);
+          await createProject(name);
           router.refresh();
           setName("");
           setSubtitle("");

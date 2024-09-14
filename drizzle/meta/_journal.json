@@ -50,6 +50,13 @@
       "when": 1726249013412,
       "tag": "0008_nasty_zuras",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1726306189682,
+      "tag": "0009_freezing_lake",
+      "breakpoints": true
     }
   ]
 }

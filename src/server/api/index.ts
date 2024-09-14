@@ -34,7 +34,6 @@ export type ProjectWithOwners = Project & {
 // Define the function to create a project with multiple owners
 export async function createProject(
   name: string,
-  subtitle: string,
 ): Promise<{ message: string } | undefined> {
   try {
     const session = await auth();
@@ -65,6 +64,7 @@ export async function createProject(
     await db.insert(ProjectUserTable).values({
       projectId, // Using the non-undefined projectId
       userId,
+      role: "owner",
     });
 
     // Return success message

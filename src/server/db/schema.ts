@@ -1,7 +1,9 @@
 import { Many, relations, sql } from "drizzle-orm";
 import {
+  customType,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   serial,
@@ -17,6 +19,9 @@ import { type AdapterAccount } from "next-auth/adapters";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
+
+// Define TypeScript enum values
+export const roleEnum = pgEnum("roles", ["owner", "admin", "member"]);
 
 export const createTable = pgTableCreator((name) => `cmap_${name}`);
 
@@ -70,6 +75,7 @@ export const ProjectUserTable = createTable(
     userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id),
+    role: roleEnum("role"),
   },
   (table) => {
     return { pk: primaryKey({ columns: [table.userId, table.projectId] }) };

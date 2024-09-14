@@ -1,6 +1,7 @@
 "use server";
 import { db } from "../db";
 import { auth } from "auth";
+import { ProjectUserTable, users } from "../db/schema";
 
 export async function getThing() {
   try {
@@ -14,6 +15,7 @@ export async function getThing() {
           // Navigate through the ProjectUserTable to users
           with: {
             project: true, // Fetch associated user details
+            user: true,
           },
         },
       },
@@ -25,6 +27,19 @@ export async function getThing() {
   }
 }
 
+// Example of inviting a member or admin
+export async function inviteUserToProject(
+  projectId: string,
+  userId: string,
+  role: "owner" | "admin" | "member",
+) {
+  // Add the user with the selected role
+  return await db.insert(ProjectUserTable).values({ projectId, role, userId });
+}
+
+export async function getUsers() {
+  return await db.query.users.findMany();
+}
 // "use server";
 
 // import { count, eq } from "drizzle-orm";
