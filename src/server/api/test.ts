@@ -1,7 +1,7 @@
 "use server";
 import { db } from "../db";
 import { auth } from "auth";
-import { ProjectUserTable } from "../db/schema";
+import { ProjectUserTable, tasks } from "../db/schema";
 
 export async function getThing() {
   try {
@@ -27,6 +27,10 @@ export async function getThing() {
   }
 }
 
+export async function createTask(projectId: string, data: { name: string }) {
+  return await db.insert(tasks).values({ ...data, projectId });
+}
+
 // Example of inviting a member or admin
 export async function inviteUserToProject(
   projectId: string,
@@ -48,6 +52,7 @@ export async function getProject(id: string) {
       users: {
         with: { user: true },
       },
+      tasks: true,
     },
   });
 }

@@ -96,6 +96,26 @@ export const users = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
+export const tasks = createTable("task", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: varchar("name", { length: 255 }).notNull(),
+  projectId: varchar("project_id", { length: 255 })
+    .notNull()
+    .references(() => projects.id),
+});
+
+// export const projectTasks = createTable("projectTasks", {
+//   projectId: varchar("project_id", { length: 255 })
+//     .notNull()
+//     .references(() => projects.id),
+//   taskId: varchar("task_id", { length: 255 })
+//     .notNull()
+//     .references(() => tasks.id),
+// });
+
 export const accounts = createTable(
   "account",
   {
@@ -178,6 +198,14 @@ export const projectUserRelations = relations(ProjectUserTable, ({ one }) => ({
 
 export const projectsRelations = relations(projects, ({ many }) => ({
   users: many(ProjectUserTable),
+  tasks: many(tasks),
+}));
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  project: one(projects, {
+    fields: [tasks.projectId],
+    references: [projects.id],
+  }),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
