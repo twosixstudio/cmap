@@ -1,5 +1,6 @@
 import { env } from "~/env";
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
+import type { DefaultSession } from "next-auth";
 import Github from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "~/server/db";
