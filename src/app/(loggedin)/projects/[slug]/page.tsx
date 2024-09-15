@@ -5,14 +5,15 @@ import { auth } from "@/auth";
 import { CreateTask } from "./_components/create-task/create-task";
 
 export default async function Page(props: { params: { slug: string } }) {
-  const project = await getProject(props.params.slug);
-  const users = await getUsers();
-  if (!project) notFound();
-  const owners = project.users.filter((x) => x.role === "owner");
   const session = await auth();
+  const users = await getUsers();
+  const project = await getProject(props.params.slug);
+  if (!project) notFound();
+  if (!session) return null;
+  const owners = project.users.filter((x) => x.role === "owner");
   const amOwner = !!owners
     .map((y) => y.userId)
-    .find((x) => x.includes(session?.user.id));
+    .find((x) => x.includes(session.user.id));
 
   return (
     <div className="mx-auto w-full max-w-4xl px-10 py-20">
