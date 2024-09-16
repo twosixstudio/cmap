@@ -1,3 +1,9 @@
+import { ProjectList } from "./projects/_components/project-list/project-list";
+
 export default function Page() {
-  return <div>Page</div>;
+  return (
+    <div>
+      <ProjectList />
+    </div>
+  );
 }
