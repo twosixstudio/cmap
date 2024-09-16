@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_task" ALTER COLUMN "task_status" SET NOT NULL;

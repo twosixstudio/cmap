@@ -28,7 +28,7 @@ export async function getThing() {
 }
 
 export async function createTask(projectId: string, data: { name: string }) {
-  return await db.insert(tasks).values({ ...data, projectId });
+  return await db.insert(tasks).values({ ...data, projectId, status: "todo" });
 }
 
 // Example of inviting a member or admin

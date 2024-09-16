@@ -88,7 +88,7 @@ export const tasks = createTable("task", {
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
-  status: taskStatusEnum("task_status"),
+  status: taskStatusEnum("task_status").notNull(),
 });
 
 export const accounts = createTable(
