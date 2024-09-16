@@ -1,12 +1,10 @@
-import { Many, relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
-  customType,
   index,
   integer,
   pgEnum,
   pgTableCreator,
   primaryKey,
-  serial,
   text,
   timestamp,
   varchar,
@@ -22,6 +20,12 @@ import { type AdapterAccount } from "next-auth/adapters";
 
 // Define TypeScript enum values
 export const roleEnum = pgEnum("roles", ["owner", "admin", "member"]);
+
+export const taskStatusEnum = pgEnum("task_status", [
+  "todo",
+  "in_progress",
+  "done",
+]);
 
 export const createTable = pgTableCreator((name) => `cmap_${name}`);
 
@@ -84,16 +88,8 @@ export const tasks = createTable("task", {
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
+  status: taskStatusEnum("task_status"),
 });
-
-// export const projectTasks = createTable("projectTasks", {
-//   projectId: varchar("project_id", { length: 255 })
-//     .notNull()
-//     .references(() => projects.id),
-//   taskId: varchar("task_id", { length: 255 })
-//     .notNull()
-//     .references(() => tasks.id),
-// });
 
 export const accounts = createTable(
   "account",
