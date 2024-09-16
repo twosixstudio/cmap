@@ -56,3 +56,9 @@ export async function getProject(id: string) {
     },
   });
 }
+
+export async function getProjectTasks(projectId: string) {
+  return await db.query.tasks.findMany({
+    where: (table, fn) => fn.eq(table.projectId, projectId),
+  });
+}

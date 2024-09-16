@@ -1,7 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { inviteUserToProject } from "~/server/api/test";
+import { Button } from "~/ui/button";
+import { Card, CardContent } from "~/ui/card";
 
 export function InviteUsers(props: {
   users: {
@@ -36,7 +39,9 @@ export function InviteUsers(props: {
 
   if (!props.project) return null;
 
-  const projectUserIds = props.project.users.map((x) => x.userId);
+  const ownerIds = props.project.users
+    .filter((x) => x.role === "owner")
+    .map((x) => x.userId);
 
   const handleInvite = async (userId: string) => {
     if (!props.project) return;
@@ -49,20 +54,58 @@ export function InviteUsers(props: {
   };
 
   return (
-    <div>
-      {props.project.users.map((x) => (
-        <div key={x.userId}>{x.user.name}</div>
-      ))}
-      {props.users
-        .filter((y) => !projectUserIds.includes(y.id))
-        .map((x) => (
-          <div key={x.id}>
-            {x.name} {x.id}
-            <button onClick={() => handleInvite(x.id)} className="bg-green-400">
-              Add to project
-            </button>
+    <div className="flex flex-col gap-2">
+      <h2 className="font-bold">Add members</h2>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-4">
+            {props.users
+              .filter((x) => !ownerIds.includes(x.id))
+              .map((x) => {
+                const isAdded = props.project?.users
+                  .map((x) => x.userId)
+                  .includes(x.id);
+                return (
+                  <div
+                    key={x.id}
+                    className="flex w-full justify-between gap-10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Image
+                        className="rounded-full"
+                        height={40}
+                        width={40}
+                        src={x.image ?? ""}
+                        alt={x.name ?? ""}
+                      />
+                      <div className="flex flex-col text-sm leading-tight">
+                        <p className="font-semibold">{x.name}</p>
+                        <p className="text-muted-foreground">{x.email}</p>
+                      </div>
+                    </div>
+                    {isAdded ? (
+                      <Button
+                        onClick={() => handleInvite(x.id)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Remove
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleInvite(x.id)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Add
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
           </div>
-        ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }

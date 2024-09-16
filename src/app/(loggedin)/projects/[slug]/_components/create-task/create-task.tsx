@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { createTask } from "~/server/api/test";
+import { Button } from "~/ui/button";
+import { Input } from "~/ui/input";
 
 type FormProps = {
   name: string;
@@ -19,16 +21,17 @@ export function CreateTask(props: { projectId: string }) {
   }
 
   return (
-    <div>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+    <div className="flex flex-col gap-2">
+      <h2 className="font-bold">Quick Add</h2>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
         <Controller
           name="name"
           control={form.control}
           render={({ field }) => (
-            <input type="text" placeholder="title" {...field} />
+            <Input type="text" placeholder="Name" {...field} />
           )}
         />
-        <button>Add</button>
+        <Button>Add Task</Button>
       </form>
     </div>
   );
