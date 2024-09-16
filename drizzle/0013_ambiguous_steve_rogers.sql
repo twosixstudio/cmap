@@ -1,0 +1,1 @@
+DROP TABLE "cmap_post";
