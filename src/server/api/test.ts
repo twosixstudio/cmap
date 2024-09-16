@@ -1,7 +1,8 @@
 "use server";
 import { db } from "../db";
 import { auth } from "auth";
-import { ProjectUserTable, tasks } from "../db/schema";
+import { projects, ProjectUserTable, tasks } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 export async function getThing() {
   try {
@@ -60,5 +61,15 @@ export async function getProject(id: string) {
 export async function getProjectTasks(projectId: string) {
   return await db.query.tasks.findMany({
     where: (table, fn) => fn.eq(table.projectId, projectId),
+  });
+}
+
+export async function deleteProject(projectId: string) {
+  return await db.transaction(async (tx) => {
+    await tx.delete(tasks).where(eq(tasks.projectId, projectId));
+    await tx
+      .delete(ProjectUserTable)
+      .where(eq(ProjectUserTable.projectId, projectId));
+    return await tx.delete(projects).where(eq(projects.id, projectId));
   });
 }
