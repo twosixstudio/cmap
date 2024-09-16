@@ -1,5 +1,6 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import tailwindanimate from "tailwindcss-animate";
 
 export default {
   content: ["./src/**/*.tsx"],
@@ -7,6 +8,20 @@ export default {
     extend: {
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -45,7 +60,7 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [tailwindanimate],
 } satisfies Config;
 
 // import { fontFamily } from "tailwindcss/defaultTheme";

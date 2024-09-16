@@ -6,6 +6,16 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Button } from "~/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "~/ui/popover";
 import {
   Table,
   TableBody,
@@ -35,7 +45,24 @@ const columns: ColumnDef<Task>[] = [
         done: "Done",
         in_progress: "In Progress",
       };
-      return <div>{label[cell.row.original.status]}</div>;
+      return (
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                {label[cell.row.original.status]}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Change status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {Object.entries(label).map((x) => (
+                <DropdownMenuItem key={x[0]}>{x[1]}</DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
     },
   },
 ];
