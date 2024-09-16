@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { inviteUserToProject } from "~/server/api/test";
+import { inviteUserToProject } from "~/server/services/project-users-services";
 import { Button } from "~/ui/button";
 import { Card, CardContent } from "~/ui/card";
 
@@ -14,13 +14,24 @@ export function InviteUsers(props: {
     emailVerified: Date | null;
     image: string | null;
   }[];
-  project:
-    | {
+  project: {
+    id: string;
+    name: string | null;
+    amOwner: boolean;
+    owners: {
+      projectId: string;
+      userId: string;
+      role: "owner" | "admin" | "member" | null;
+      user: {
         id: string;
         name: string | null;
-        createdAt: Date;
-        updatedAt: Date | null;
-        users: {
+        email: string;
+        emailVerified: Date | null;
+        image: string | null;
+      };
+    }[];
+    members:
+      | {
           projectId: string;
           userId: string;
           role: "owner" | "admin" | "member" | null;
@@ -31,20 +42,15 @@ export function InviteUsers(props: {
             emailVerified: Date | null;
             image: string | null;
           };
-        }[];
-      }
-    | undefined;
+        }[]
+      | undefined;
+  };
 }) {
   const router = useRouter();
 
-  if (!props.project) return null;
-
-  const ownerIds = props.project.users
-    .filter((x) => x.role === "owner")
-    .map((x) => x.userId);
+  const ownerIds = props.project.owners.map((x) => x.userId);
 
   const handleInvite = async (userId: string) => {
-    if (!props.project) return;
     try {
       await inviteUserToProject(props.project.id, userId, "member");
       router.refresh();
@@ -62,9 +68,10 @@ export function InviteUsers(props: {
             {props.users
               .filter((x) => !ownerIds.includes(x.id))
               .map((x) => {
-                const isAdded = props.project?.users
-                  .map((x) => x.userId)
+                const isAdded = props.project.members
+                  ?.map((y) => y.userId)
                   .includes(x.id);
+
                 return (
                   <div
                     key={x.id}

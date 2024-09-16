@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { createProject } from "~/server/api";
+import { createProject } from "~/server/services/project-services";
 import { Button } from "~/ui/button";
 import { Input } from "~/ui/input";
 
@@ -20,7 +20,7 @@ export function ProjectCreate() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-2 px-10">
+    <div className="flex flex-col gap-2">
       <h2 className="font-bold">Quick Add</h2>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
         <Controller

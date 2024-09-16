@@ -1,8 +1,8 @@
-import { getProjectTasks } from "~/server/api/test";
+import { getTasksForProject } from "~/server/services/task-services";
 import { TaskTable } from "./_components/task-table/task-table";
 
 export async function TaskList(props: { projectId: string }) {
-  const tasks = await getProjectTasks(props.projectId);
+  const tasks = await getTasksForProject(props.projectId);
   return (
     <div className="flex flex-col gap-2">
       <h2 className="font-bold">Tasks</h2>

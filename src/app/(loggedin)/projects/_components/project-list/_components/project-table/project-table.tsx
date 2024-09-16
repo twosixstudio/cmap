@@ -1,21 +1,12 @@
 "use client";
 
 import {
-  useReactTable,
-  getCoreRowModel,
+  ColumnDef,
   flexRender,
-  type ColumnDef,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import type { TaskStatusTypes } from "~/server/types";
-import { Button } from "~/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/ui/dropdown-menu";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -25,51 +16,54 @@ import {
   TableRow,
 } from "~/ui/table";
 
-type Task = {
+type Project = {
   id: string;
-  name: string;
-  status: TaskStatusTypes;
+  name: string | null;
+  members: {
+    id: string;
+    name: string | null;
+    email: string;
+    emailVerified: Date | null;
+    image: string | null;
+  }[];
+  owners: {
+    id: string;
+    name: string | null;
+    email: string;
+    emailVerified: Date | null;
+    image: string | null;
+  }[];
 };
 
-const columns: ColumnDef<Task>[] = [
+const columns: ColumnDef<Project>[] = [
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => (
+      <Link href={`/projects/${row.original.id}`} className="underline">
+        {row.getValue("name")}
+      </Link>
+    ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ cell }) => {
-      const label = {
-        todo: "Todo",
-        done: "Done",
-        in_progress: "In Progress",
-      };
-      return (
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                {label[cell.row.original.status]}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>Change status</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {Object.entries(label).map((x) => (
-                <DropdownMenuItem key={x[0]}>{x[1]}</DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
+    accessorKey: "owners",
+    header: "Owners",
+    cell: ({ cell }) => (
+      <pre>{cell.row.original.owners.map((x) => x.name)}</pre>
+    ),
+  },
+  {
+    accessorKey: "members",
+    header: "Members",
+    cell: ({ cell }) => (
+      <pre>{cell.row.original.members.map((x) => x.name)}</pre>
+    ),
   },
 ];
 
-export function TaskTable(props: { tasks: Task[] }) {
+export function ProjectTable(props: { projects: Project[] }) {
   const table = useReactTable({
-    data: props.tasks,
+    data: props.projects,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

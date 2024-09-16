@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { deleteProject } from "~/server/api/test";
+import { deleteProject } from "~/server/services/project-services";
 import { Button } from "~/ui/button";
 
 export function ProjectDelete(props: { projectId: string }) {
