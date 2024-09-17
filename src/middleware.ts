@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const redirectPage = "/auth/login";
+const redirectPage = "/login";
 const isProd = process.env.NODE_ENV === "production";
 const COOKIE_NAME = isProd
   ? "__Secure-authjs.session-token"

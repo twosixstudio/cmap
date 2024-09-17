@@ -13,7 +13,7 @@ import {
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
-    signIn: "/auth/login", // Specify your custom sign-in page
+    signIn: "/login", // Specify your custom sign-in page
   },
   callbacks: {
     session: ({ session, user }) => ({
