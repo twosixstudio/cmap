@@ -1,9 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { updateTaskStatus, type Task } from "~/server/services/task-services";
+import {
+  deleteTask,
+  updateTaskStatus,
+  type Task,
+} from "~/server/services/task-services";
 import type { TaskStatusTypes } from "~/server/types";
 import { Button } from "~/ui/button";
 import { DataTable } from "~/ui/data-table";
@@ -53,10 +58,30 @@ const columns: ColumnDef<Task>[] = [
       />
     ),
   },
+  {
+    accessorKey: "delete",
+    header: "Delete",
+    cell: ({ row }) => {
+      return <DeleteTaskButton taskId={row.original.id} />;
+    },
+  },
 ];
 
 export function TaskTable(props: { tasks: Task[] }) {
   return <DataTable columns={columns} data={props.tasks} />;
+}
+
+function DeleteTaskButton(props: { taskId: string }) {
+  const router = useRouter();
+  async function handleDelete() {
+    await deleteTask(props.taskId);
+    router.refresh();
+  }
+  return (
+    <Button variant="destructive" size="sm" onClick={() => handleDelete()}>
+      <Trash2Icon className="w-5" />
+    </Button>
+  );
 }
 
 function TaskStatusButton(props: {

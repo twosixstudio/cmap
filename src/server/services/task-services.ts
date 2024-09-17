@@ -127,3 +127,17 @@ export async function updateTaskStatus(props: {
     return handleError(error);
   }
 }
+
+export async function deleteTask(taskId: string) {
+  // Start a transaction to ensure data consistency
+  try {
+    await db.transaction(async (tx) => {
+      // First, delete related records in the taskUsers table
+      await tx.delete(taskUsers).where(eq(taskUsers.taskId, taskId));
+      // Then, delete the task itself
+      await tx.delete(tasks).where(eq(tasks.id, taskId));
+    });
+  } catch (error) {
+    return handleError(error);
+  }
+}
