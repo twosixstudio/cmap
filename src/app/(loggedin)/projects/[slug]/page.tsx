@@ -10,7 +10,8 @@ import { getUsers } from "~/server/services/user-services";
 export default async function Page(props: { params: { slug: string } }) {
   const session = await auth();
   const users = await getUsers();
-  const project = await getProject(props.params.slug);
+  const { data: project, success } = await getProject(props.params.slug);
+  if (!success) return notFound();
   if (!project) notFound();
   if (!session) return null;
 

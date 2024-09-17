@@ -4,33 +4,91 @@ import { auth } from "@/auth";
 import { db } from "../db";
 import { projects, tasks, projectUsers } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { handleError } from "~/utils/handle-error";
 
-export async function getProject(id: string) {
-  const session = await auth();
-  if (!session) throw Error("Oh no");
+type ResponseBase<T> = {
+  success: true;
+  data: T;
+};
 
-  const res = await db.query.projects.findFirst({
-    where: (table, fn) => fn.eq(table.id, id),
-    with: {
-      users: {
-        with: { user: true },
-      },
-      tasks: true,
-    },
-  });
-
-  if (!res) return undefined;
-
-  const owners = res.users.filter((x) => x.role === "owner");
-  const members = res.users.filter((x) => x.role === "member");
-  const transformed = {
-    id: res.id,
-    name: res.name,
-    amOwner: owners?.map((x) => x.userId).includes(session.user.id),
-    owners,
-    members,
+type Error = {
+  success: false;
+  data: {
+    error: string;
   };
-  return transformed;
+};
+
+type Project = {
+  id: string;
+  name: string | null;
+  amOwner: boolean;
+  owners: {
+    projectId: string;
+    userId: string;
+    role: "owner" | "admin" | "member" | null;
+    user: {
+      id: string;
+      name: string | null;
+      email: string;
+      emailVerified: Date | null;
+      image: string | null;
+    };
+  }[];
+  members: {
+    projectId: string;
+    userId: string;
+    role: "owner" | "admin" | "member" | null;
+    user: {
+      id: string;
+      name: string | null;
+      email: string;
+      emailVerified: Date | null;
+      image: string | null;
+    };
+  }[];
+};
+
+export async function getProject(
+  id: string,
+): Promise<ResponseBase<Project> | Error> {
+  try {
+    const session = await auth();
+    if (!session) throw Error("Oh no");
+
+    const res = await db.query.projects.findFirst({
+      where: (table, fn) => fn.eq(table.id, id),
+      with: {
+        users: {
+          with: { user: true },
+        },
+        tasks: true,
+      },
+    });
+
+    if (!res) {
+      throw Error("No res");
+    }
+
+    const isUserInProject = res.users.some(
+      (user) => user.userId === session.user.id,
+    );
+    if (!isUserInProject) {
+      throw Error("Authenticated user is not part of the project");
+    }
+
+    const owners = res.users.filter((x) => x.role === "owner");
+    const members = res.users.filter((x) => x.role === "member");
+    const transformed = {
+      id: res.id,
+      name: res.name,
+      amOwner: owners?.map((x) => x.userId).includes(session.user.id),
+      owners,
+      members,
+    };
+    return { success: true, data: transformed };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
 // Define the function to create a project with multiple owners

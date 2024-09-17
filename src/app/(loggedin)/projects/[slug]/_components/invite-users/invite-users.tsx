@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { inviteUserToProject } from "~/server/services/project-users-services";
+import {
+  inviteUserToProject,
+  removeUserFromProject,
+} from "~/server/services/project-users-services";
 import { Button } from "~/ui/button";
 import { Card, CardContent } from "~/ui/card";
 
@@ -59,6 +62,15 @@ export function InviteUsers(props: {
     }
   };
 
+  async function handleRemoveUser(userId: string) {
+    try {
+      await removeUserFromProject({ projectId: props.project.id, userId });
+      router.refresh();
+    } catch (error) {
+      console.error("Issue", error);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <h2 className="font-bold">Add members</h2>
@@ -92,7 +104,7 @@ export function InviteUsers(props: {
                     </div>
                     {isAdded ? (
                       <Button
-                        onClick={() => handleInvite(x.id)}
+                        onClick={() => handleRemoveUser(x.id)}
                         variant="outline"
                         size="sm"
                       >

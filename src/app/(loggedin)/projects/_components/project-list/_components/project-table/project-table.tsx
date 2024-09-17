@@ -1,5 +1,6 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import Link from "next/link";
 import { DataTable } from "~/ui/data-table";
 
@@ -28,7 +29,7 @@ const columns: ColumnDef<Project>[] = [
     header: "Name",
     cell: ({ row }) => (
       <Link href={`/projects/${row.original.id}`} className="underline">
-        {row.getValue("name")}
+        {row.getValue("name") ? row.getValue("name") : "No name"}
       </Link>
     ),
   },
@@ -36,14 +37,36 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: "owners",
     header: "Owners",
     cell: ({ cell }) => (
-      <pre>{cell.row.original.owners.map((x) => x.name)}</pre>
+      <div>
+        {cell.row.original.owners.map((x) => (
+          <Image
+            className="rounded-full"
+            key={x.id}
+            height={30}
+            width={30}
+            src={x.image ?? ""}
+            alt={x.name ?? ""}
+          />
+        ))}
+      </div>
     ),
   },
   {
     accessorKey: "members",
     header: "Members",
     cell: ({ cell }) => (
-      <pre>{cell.row.original.members.map((x) => x.name)}</pre>
+      <div>
+        {cell.row.original.members.map((x) => (
+          <Image
+            className="rounded-full"
+            key={x.id}
+            height={30}
+            width={30}
+            src={x.image ?? ""}
+            alt={x.name ?? ""}
+          />
+        ))}
+      </div>
     ),
   },
 ];

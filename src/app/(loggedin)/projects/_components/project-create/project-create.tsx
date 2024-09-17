@@ -21,7 +21,7 @@ export function ProjectCreate() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="font-bold">Quick Add</h2>
+      <h2 className="font-bold">Add Project</h2>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
         <Controller
           name="name"
