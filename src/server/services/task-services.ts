@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { db } from "../db";
 import { tasks, taskUsers } from "../db/schema";
 import type { TaskStatusTypes } from "../types";
+import { eq } from "drizzle-orm";
+import { handleError } from "~/utils/handle-error";
 
 export type Task = {
   id: string;
@@ -63,15 +65,7 @@ interface CreateTaskData {
   name: string;
 }
 
-interface CreateTaskResponse {
-  message: string;
-  taskId?: string;
-}
-
-export async function createTask(
-  projectId: string,
-  data: CreateTaskData,
-): Promise<CreateTaskResponse> {
+export async function createTask(projectId: string, data: CreateTaskData) {
   const session = await auth();
   if (!session) {
     console.error("Authentication failed: no session");
@@ -89,7 +83,7 @@ export async function createTask(
       const taskList = await trx
         .insert(tasks)
         .values({ ...data, projectId, status: "todo" })
-        .returning({ id: tasks.id });
+        .returning();
 
       if (!taskList || taskList.length === 0) {
         throw new Error("Failed to create task: no task returned from insert");
@@ -106,11 +100,30 @@ export async function createTask(
         userId: session.user.id,
       });
 
-      return { message: "Task created successfully", taskId };
+      return { success: true, data: taskList[0] };
     });
-  } catch (error: unknown) {
-    // Log the error with more context
-    console.error("Transaction failed:", error);
-    throw new Error(`Transaction failed: ${JSON.stringify(error)}`);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function updateTaskStatus(props: {
+  taskId: string;
+  newStatus: TaskStatusTypes;
+}) {
+  try {
+    const result = await db
+      .update(tasks)
+      .set({ status: props.newStatus })
+      .where(eq(tasks.id, props.taskId))
+      .returning();
+
+    if (result.length > 0) {
+      return { success: true, data: result[0] }; // Return the updated task
+    } else {
+      throw new Error("Task not found or update failed.");
+    }
+  } catch (error) {
+    return handleError(error);
   }
 }

@@ -15,7 +15,7 @@ export default async function Page(props: { params: { slug: string } }) {
   if (!session) return null;
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-10 py-20">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-10 py-20">
       <h1 className="border-b pb-1 text-2xl font-bold">{project.name}</h1>
       <ProjectDelete projectId={project.id} />
       <TaskList projectId={project.id} />
