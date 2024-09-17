@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_task" ALTER COLUMN "created_at" SET NOT NULL;

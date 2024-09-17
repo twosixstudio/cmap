@@ -17,7 +17,7 @@ export const tasks = createTable("task", {
     .notNull()
     .references(() => projects.id),
   status: taskStatusEnum("task_status").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
