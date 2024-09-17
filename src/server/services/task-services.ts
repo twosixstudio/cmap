@@ -2,9 +2,9 @@
 import { auth } from "@/auth";
 import { db } from "../db";
 import { tasks, taskUsers } from "../db/schema";
-import { TaskStatusTypes } from "../types";
+import type { TaskStatusTypes } from "../types";
 
-type Task = {
+export type Task = {
   id: string;
   name: string;
   status: TaskStatusTypes;
@@ -15,12 +15,13 @@ type Task = {
     emailVerified: Date | null;
     image: string | null;
   }[];
+  project: { name: string | null };
 };
 
 export async function getTasksForProject(projectId: string): Promise<Task[]> {
   const tasks = await db.query.tasks.findMany({
     where: (table, fn) => fn.eq(table.projectId, projectId),
-    with: { users: { with: { user: true } } },
+    with: { users: { with: { user: true } }, project: true },
   });
 
   return tasks.map((x) => ({
@@ -28,6 +29,9 @@ export async function getTasksForProject(projectId: string): Promise<Task[]> {
     name: x.name,
     status: x.status,
     users: x.users.map((x) => x.user),
+    project: {
+      name: x.project.name,
+    },
   }));
 }
 
@@ -39,7 +43,9 @@ export async function getMyTasks(): Promise<Task[]> {
   }
   const taskList = await db.query.taskUsers.findMany({
     where: (table, fn) => fn.eq(table.userId, session.user.id),
-    with: { task: { with: { users: { with: { user: true } } } } },
+    with: {
+      task: { with: { project: true, users: { with: { user: true } } } },
+    },
   });
 
   return taskList.map((x) => ({
@@ -47,6 +53,9 @@ export async function getMyTasks(): Promise<Task[]> {
     name: x.task.name,
     status: x.task.status,
     users: x.task.users.map((x) => x.user),
+    project: {
+      name: x.task.project.name,
+    },
   }));
 }
 

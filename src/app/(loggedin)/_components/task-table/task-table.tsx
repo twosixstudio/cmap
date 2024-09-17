@@ -6,7 +6,7 @@ import {
   flexRender,
   type ColumnDef,
 } from "@tanstack/react-table";
-import type { TaskStatusTypes } from "~/server/types";
+import type { Task } from "~/server/services/task-services";
 import { Button } from "~/ui/button";
 import {
   DropdownMenu,
@@ -25,19 +25,6 @@ import {
   TableRow,
 } from "~/ui/table";
 
-type Task = {
-  id: string;
-  name: string;
-  status: TaskStatusTypes;
-  users: {
-    id: string;
-    name: string | null;
-    email: string;
-    emailVerified: Date | null;
-    image: string | null;
-  }[];
-};
-
 const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "name",
@@ -47,6 +34,10 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "users",
     header: "Assignees",
     cell: ({ cell }) => <div>{cell.row.original.users.map((x) => x.name)}</div>,
+  },
+  {
+    accessorKey: "project.name",
+    header: "Project",
   },
   {
     accessorKey: "status",
@@ -86,7 +77,7 @@ export function TaskTable(props: { tasks: Task[] }) {
     getCoreRowModel: getCoreRowModel(),
   });
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-white">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

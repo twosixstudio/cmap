@@ -1,5 +1,5 @@
+import { TaskTable } from "~/app/(loggedin)/_components/task-table/task-table";
 import { getTasksForProject } from "~/server/services/task-services";
-import { TaskTable } from "./_components/task-table/task-table";
 
 export async function TaskList(props: { projectId: string }) {
   const tasks = await getTasksForProject(props.projectId);

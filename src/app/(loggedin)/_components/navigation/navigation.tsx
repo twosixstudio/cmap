@@ -10,7 +10,7 @@ export async function Navigation() {
           className="rounded-md bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200"
           href="/"
         >
-          Home
+          Dashboard
         </Link>
         <Link
           className="rounded-md bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200"
