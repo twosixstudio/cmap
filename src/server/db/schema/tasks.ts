@@ -1,4 +1,4 @@
-import { pgEnum, varchar } from "drizzle-orm/pg-core";
+import { pgEnum, timestamp, varchar } from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { createTable } from "../create-table";
 import { relations } from "drizzle-orm";
@@ -17,6 +17,7 @@ export const tasks = createTable("task", {
     .notNull()
     .references(() => projects.id),
   status: taskStatusEnum("task_status").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({

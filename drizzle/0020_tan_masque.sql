@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_task" ADD COLUMN "created_at" timestamp DEFAULT now();

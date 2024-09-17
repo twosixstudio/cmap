@@ -24,6 +24,7 @@ export async function getTasksForProject(projectId: string): Promise<Task[]> {
   const tasks = await db.query.tasks.findMany({
     where: (table, fn) => fn.eq(table.projectId, projectId),
     with: { users: { with: { user: true } }, project: true },
+    orderBy: (tasks, { asc }) => [asc(tasks.name)],
   });
 
   return tasks.map((x) => ({

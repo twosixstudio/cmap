@@ -1,7 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Trash2Icon } from "lucide-react";
+import {
+  CircleCheckIcon,
+  CircleEllipsisIcon,
+  CircleIcon,
+  Clock3Icon,
+  LucideIcon,
+  Trash2Icon,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -20,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/ui/dropdown-menu";
+import { cn } from "~/utils/cn";
 
 const columns: ColumnDef<Task>[] = [
   {
@@ -51,6 +59,7 @@ const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    size: 10,
     cell: ({ row }) => (
       <TaskStatusButton
         taskId={row.original.id}
@@ -89,10 +98,44 @@ function TaskStatusButton(props: {
   taskId: string;
 }) {
   const router = useRouter();
-  const label: Record<TaskStatusTypes, string> = {
-    todo: "Todo",
-    in_progress: "In Progress",
-    done: "Done",
+
+  const info: Record<
+    TaskStatusTypes,
+    { label: string; icon: (props: { className: string }) => React.ReactNode }
+  > = {
+    todo: {
+      label: "Todo",
+      icon: (props) => (
+        <CircleIcon
+          className={cn(
+            "fill-slate-100 stroke-slate-400 group-hover:fill-slate-200 group-hover:stroke-slate-500",
+            props.className,
+          )}
+        />
+      ),
+    },
+    in_progress: {
+      label: "In Progress",
+      icon: (props) => (
+        <Clock3Icon
+          className={cn(
+            "fill-yellow-100 stroke-yellow-600 group-hover:fill-yellow-200 group-hover:stroke-yellow-700",
+            props.className,
+          )}
+        />
+      ),
+    },
+    done: {
+      label: "Done",
+      icon: (props) => (
+        <CircleCheckIcon
+          className={cn(
+            "fill-green-100 stroke-green-600 group-hover:fill-green-200 group-hover:stroke-green-700",
+            props.className,
+          )}
+        />
+      ),
+    },
   };
 
   async function handleStatusUpdate(status: TaskStatusTypes) {
@@ -102,23 +145,40 @@ function TaskStatusButton(props: {
     });
     router.refresh();
   }
+  const Icon = info[props.currentStatus].icon;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
-          {label[props.currentStatus]}
+        <Button variant="link" size="sm" className="group -ml-3">
+          <Icon className="w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        align="start"
+      >
         <DropdownMenuLabel>Change status</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {(Object.entries(label) as [TaskStatusTypes, string][]).map(
-          ([key, value]) => (
-            <DropdownMenuItem key={key} onClick={() => handleStatusUpdate(key)}>
-              {value}
+        {(
+          Object.entries(info) as [
+            TaskStatusTypes,
+            {
+              label: string;
+              icon: (props: { className: string }) => React.ReactNode;
+            },
+          ][]
+        ).map(([key, value]) => {
+          const Icon = value.icon;
+          return (
+            <DropdownMenuItem
+              className="flex gap-1 text-sm text-muted-foreground"
+              key={key}
+              onClick={() => handleStatusUpdate(key)}
+            >
+              <Icon className="w-5" /> {value.label}
             </DropdownMenuItem>
-          ),
-        )}
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
