@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_project" DROP COLUMN IF EXISTS "new";

@@ -99,6 +99,34 @@
       "when": 1726491492474,
       "tag": "0015_brave_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1726572311479,
+      "tag": "0016_flashy_blazing_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1726572475867,
+      "tag": "0017_jittery_snowbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1726572574115,
+      "tag": "0018_closed_rattler",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1726572646211,
+      "tag": "0019_wide_katie_power",
+      "breakpoints": true
     }
   ]
 }

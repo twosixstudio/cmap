@@ -18,6 +18,12 @@ export async function Navigation() {
         >
           Projects
         </Link>
+        <Link
+          className="rounded-md bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200"
+          href="/my-tasks"
+        >
+          My Tasks
+        </Link>
       </div>
       <Link
         href={session ? "/api/auth/signout" : "/api/auth/signin"}

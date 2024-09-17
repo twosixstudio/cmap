@@ -1,8 +1,9 @@
 import { relations, sql } from "drizzle-orm";
 import { index, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createTable } from "../create-table";
-import { tasks } from "./tasks";
 import { projectUsers } from "./project-users";
+import { taskUsers } from "./task-users";
+import { tasks } from "./tasks";
 
 export const projects = createTable(
   "project",

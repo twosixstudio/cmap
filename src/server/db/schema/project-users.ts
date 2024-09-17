@@ -23,7 +23,7 @@ export const projectUsers = createTable(
   },
 );
 
-// ProjectUserTable
+// Relations
 export const projectUserRelations = relations(projectUsers, ({ one }) => ({
   user: one(users, {
     fields: [projectUsers.userId],

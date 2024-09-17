@@ -1,0 +1,1 @@
+ALTER TABLE "cmap_task_user" ADD CONSTRAINT "cmap_task_user_user_id_task_id_pk" PRIMARY KEY("user_id","task_id");

@@ -2,8 +2,7 @@
 import { auth } from "@/auth";
 
 import { db } from "../db";
-import { projects, tasks } from "../db/schema";
-import { projectUsers } from "../db/schema/project-users";
+import { projects, tasks, projectUsers } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export async function getProject(id: string) {
