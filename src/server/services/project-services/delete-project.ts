@@ -11,7 +11,7 @@ import { handleError } from "~/utils/handle-error";
  * ensuring that the user has the appropriate permissions to do so.
  *
  * This function performs a transactional deletion of:
- * 1. Verifying user authentication and checking their association and role in the project.
+ * 1. Verifying the user's role in the project.
  * 2. All task users associated with the tasks belonging to the project.
  * 3. All tasks that are part of the project.
  * 4. All users associated with the project (via the `projectUsers` table).
@@ -20,83 +20,85 @@ import { handleError } from "~/utils/handle-error";
  * The operation is wrapped in a transaction to ensure that either all the deletions
  * occur, or none do, thereby maintaining data consistency in case of errors.
  *
- * Steps involved:
- * - Authenticate the user.
- * - Check if the authenticated user is linked to the project.
- * - Ensure the user has the `owner` role to authorize deletion.
- * - Fetch all task IDs associated with the given project.
- * - If there are any tasks, delete the corresponding task users.
- * - Delete all tasks linked to the project.
- * - Delete all users linked to the project.
- * - Finally, delete the project itself.
- *
  * @param {string} projectId - The unique identifier of the project to be deleted.
  * @returns {Promise<ServerReponse<unknown>>} - A response object indicating the success or failure of the operation.
  *
- * @throws Will propagate any error encountered during the transaction. Errors are caught and handled through `handleError`.
- *          - Throws "No auth" if the user is not authenticated.
- *          - Throws "User not linked to project" if the user is not part of the project.
- *          - Throws "User not allowed" if the user does not have the `owner` role.
+ * @throws {Error} If the user is not authenticated, not authorized, or any part of the transaction fails.
  */
+const DEFAULT_ALLOWED_ROLES = ["owner"]; // Define default roles for deletion
+
 export async function deleteProject(
   projectId: string,
 ): Promise<ServerReponse<unknown>> {
   try {
     // Step 1: Authenticate the user
     const session = await auth();
-    if (!session) throw Error("No auth");
+    if (!session) throw Error("Authentication failed");
 
-    // Step 2: Verify the user is linked to the project and has the 'owner' role
+    // Step 2: Check if the user has the correct role to delete the project
+    await checkUserRoleForProject(
+      session.user.id,
+      projectId,
+      DEFAULT_ALLOWED_ROLES,
+    );
+
+    // Step 3: Perform deletion in a transaction
     const res = await db.transaction(async (tx) => {
-      // Find the user in the projectUsers table, making sure they belong to this project
-      const user = await tx.query.projectUsers.findFirst({
-        where: (table, fn) =>
-          fn.and(
-            fn.eq(table.projectId, projectId),
-            fn.eq(table.userId, session.user.id), // Ensure the user is part of the project
-          ),
-      });
-
-      // If the user is not linked to the project, throw an error
-      if (!user) throw Error("User not linked to project");
-
-      // If the user is linked but is not the owner, throw an error
-      if (user.role !== "owner") throw Error("User not allowed");
-
-      // Step 3: Fetch all task IDs related to the project
+      // Fetch all task IDs related to the project
       const tasksList = await tx.query.tasks.findMany({
         where: (table, fn) => fn.eq(table.projectId, projectId),
         columns: { id: true },
       });
 
-      // Extract the task IDs into an array
       const taskIds = tasksList.map((task) => task.id);
 
-      // Step 4: If there are tasks, delete associated taskUsers
+      // Delete associated taskUsers if there are tasks
       if (taskIds.length > 0) {
-        // Bulk delete all taskUsers associated with the fetched task IDs
         await tx.delete(taskUsers).where(inArray(taskUsers.taskId, taskIds));
       }
 
-      // Step 5: Delete all tasks linked to the project
+      // Delete tasks, project users, and the project itself
       await tx.delete(tasks).where(eq(tasks.projectId, projectId));
-
-      // Step 6: Delete all users linked to the project from the projectUsers table
       await tx
         .delete(projectUsers)
         .where(eq(projectUsers.projectId, projectId));
-
-      // Step 7: Finally, delete the project itself from the projects table
       await tx.delete(projects).where(eq(projects.id, projectId));
 
-      // Return the user object to indicate success (or other relevant info)
-      return user;
+      return { message: "Project deleted successfully" };
     });
 
-    // Return a success response with the transaction result
     return { success: true, data: res };
   } catch (error) {
-    // Catch any errors and handle them appropriately, returning the error response
+    // Catch and handle errors, returning the error response
     return handleError(error);
+  }
+}
+
+/**
+ * Checks if the user has one of the specified roles for the given project.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {string} projectId - The ID of the project.
+ * @param {string[]} allowedRoles - A list of roles that are allowed to delete the project.
+ * @throws {Error} If the user is not linked to the project or does not have one of the allowed roles.
+ */
+async function checkUserRoleForProject(
+  userId: string,
+  projectId: string,
+  allowedRoles: string[],
+) {
+  const user = await db.query.projectUsers.findFirst({
+    where: (table, fn) =>
+      fn.and(fn.eq(table.projectId, projectId), fn.eq(table.userId, userId)),
+  });
+
+  // Ensure the user is part of the project and has a valid role
+  if (!user?.role) throw Error("User is not part of this project");
+
+  // Check if the user's role is in the allowedRoles list
+  if (!allowedRoles.includes(user.role)) {
+    throw Error(
+      `User does not have sufficient permissions. Allowed roles: ${allowedRoles.join(", ")}`,
+    );
   }
 }
