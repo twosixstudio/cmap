@@ -1,22 +1,17 @@
 "use client";
 
+import { Avatar } from "@radix-ui/react-avatar";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   CircleCheckIcon,
-  CircleEllipsisIcon,
   CircleIcon,
   Clock3Icon,
-  LucideIcon,
   Trash2Icon,
 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  deleteTask,
-  updateTaskStatus,
-  type Task,
-} from "~/server/services/task-services";
-import type { TaskStatusTypes } from "~/server/types";
+import { deleteTask, updateTaskStatus } from "~/server/services/task-services";
+import type { Task, TaskStatusTypes } from "~/server/types";
+import { AvatarFallback, AvatarImage } from "~/ui/avatar";
 import { Button } from "~/ui/button";
 import { DataTable } from "~/ui/data-table";
 import {
@@ -40,14 +35,19 @@ const columns: ColumnDef<Task>[] = [
     cell: ({ cell }) => (
       <div>
         {cell.row.original.users.map((x) => (
-          <Image
-            className="rounded-full"
-            key={x.id}
-            height={30}
-            width={30}
-            src={x.image ?? ""}
-            alt={x.name ?? ""}
-          />
+          <Avatar key={x.id}>
+            <AvatarImage
+              className="h-8 w-8 rounded-full"
+              src={x.image ? x.image : ""}
+              alt="@shadcn"
+            />
+            <AvatarFallback className="h-8 w-8 rounded-full">
+              {x.name
+                ?.split(" ")
+                .map((x) => x[0]?.toUpperCase())
+                .join(" ")}
+            </AvatarFallback>
+          </Avatar>
         ))}
       </div>
     ),

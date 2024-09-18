@@ -1,30 +1,16 @@
 "use server";
 import { auth } from "@/auth";
-import { db } from "../db";
-import { tasks, taskUsers } from "../db/schema";
-import type { TaskStatusTypes } from "../types";
+import { db } from "../../db";
+import { tasks, taskUsers } from "../../db/schema";
+import type { Task, TaskStatusTypes } from "../../types";
 import { eq } from "drizzle-orm";
 import { handleError } from "~/utils/handle-error";
-
-export type Task = {
-  id: string;
-  name: string;
-  status: TaskStatusTypes;
-  users: {
-    id: string;
-    name: string | null;
-    email: string;
-    emailVerified: Date | null;
-    image: string | null;
-  }[];
-  project: { name: string | null };
-};
 
 export async function getTasksForProject(projectId: string): Promise<Task[]> {
   const tasks = await db.query.tasks.findMany({
     where: (table, fn) => fn.eq(table.projectId, projectId),
     with: { users: { with: { user: true } }, project: true },
-    orderBy: (tasks, { asc }) => [asc(tasks.name)],
+    orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
   });
 
   return tasks.map((x) => ({
@@ -35,30 +21,7 @@ export async function getTasksForProject(projectId: string): Promise<Task[]> {
     project: {
       name: x.project.name,
     },
-  }));
-}
-
-export async function getMyTasks(): Promise<Task[]> {
-  const session = await auth();
-  if (!session) {
-    console.error("Authentication failed: no session");
-    throw new Error("User authentication failed.");
-  }
-  const taskList = await db.query.taskUsers.findMany({
-    where: (table, fn) => fn.eq(table.userId, session.user.id),
-    with: {
-      task: { with: { project: true, users: { with: { user: true } } } },
-    },
-  });
-
-  return taskList.map((x) => ({
-    id: x.taskId,
-    name: x.task.name,
-    status: x.task.status,
-    users: x.task.users.map((x) => x.user),
-    project: {
-      name: x.task.project.name,
-    },
+    createdAt: x.createdAt,
   }));
 }
 
