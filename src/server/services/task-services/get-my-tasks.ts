@@ -1,3 +1,4 @@
+"use server";
 import { auth } from "@/auth";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
