@@ -33,15 +33,15 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "users",
     header: "Assignees",
     cell: ({ cell }) => (
-      <div>
+      <div className="flex gap-1">
         {cell.row.original.users.map((x) => (
           <Avatar key={x.id}>
             <AvatarImage
-              className="h-8 w-8 rounded-full"
+              className="h-7 w-7 rounded-full"
               src={x.image ? x.image : ""}
               alt="@shadcn"
             />
-            <AvatarFallback className="h-8 w-8 rounded-full">
+            <AvatarFallback className="h-7 w-7 rounded-full">
               {x.name
                 ?.split(" ")
                 .map((x) => x[0]?.toUpperCase())

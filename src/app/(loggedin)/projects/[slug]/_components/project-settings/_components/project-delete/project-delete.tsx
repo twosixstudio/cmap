@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { deleteProject } from "~/server/services/project-services";
 import { Button } from "~/ui/button";
 
@@ -11,6 +12,7 @@ export function ProjectDelete(props: { projectId: string }) {
     if (res.success) {
       router.push("/projects");
       router.refresh();
+      toast(res.data.message);
     }
     if (!res.success) {
       alert("Oh no :/");

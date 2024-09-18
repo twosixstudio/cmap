@@ -6,6 +6,7 @@ import { projects, projectUsers, tasks, taskUsers } from "~/server/db/schema";
 import type { ServerReponse } from "~/server/types";
 import { handleError } from "~/utils/handle-error";
 
+const DEFAULT_ALLOWED_ROLES = ["owner"]; // Define default roles for deletion
 /**
  * Deletes a project along with all its related tasks, task users, and project users,
  * ensuring that the user has the appropriate permissions to do so.
@@ -25,11 +26,10 @@ import { handleError } from "~/utils/handle-error";
  *
  * @throws {Error} If the user is not authenticated, not authorized, or any part of the transaction fails.
  */
-const DEFAULT_ALLOWED_ROLES = ["owner"]; // Define default roles for deletion
 
 export async function deleteProject(
   projectId: string,
-): Promise<ServerReponse<unknown>> {
+): Promise<ServerReponse<{ message: string }>> {
   try {
     // Step 1: Authenticate the user
     const session = await auth();
