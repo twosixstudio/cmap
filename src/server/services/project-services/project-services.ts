@@ -1,11 +1,8 @@
 "use server";
 import { auth } from "@/auth";
-
-import { db } from "../db";
-import { projects, tasks, projectUsers, taskUsers } from "../db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { db } from "~/server/db";
+import { projects, projectUsers } from "~/server/db/schema";
 import { handleError } from "~/utils/handle-error";
-import { TaskList } from "~/app/(loggedin)/projects/[slug]/_components/project-tasks/_components/task-list/task-list";
 
 type ResponseBase<T> = {
   success: true;
@@ -166,25 +163,4 @@ export async function getProjectsWithUsers() {
   } catch (error) {
     console.error("Error fetching data:", error);
   }
-}
-
-export async function deleteProject(projectId: string) {
-  return await db.transaction(async (tx) => {
-    // Fetch all task ids related to the project
-    const tasksList = await tx.query.tasks.findMany({
-      where: (table, fn) => fn.eq(table.projectId, projectId),
-      columns: { id: true },
-    });
-    const taskIds = tasksList.map((task) => task.id);
-
-    if (taskIds.length > 0) {
-      // Bulk delete all taskUsers for the project
-      await tx.delete(taskUsers).where(inArray(taskUsers.taskId, taskIds));
-    }
-
-    // Delete tasks, projectUsers, and the project in bulk
-    await tx.delete(tasks).where(eq(tasks.projectId, projectId));
-    await tx.delete(projectUsers).where(eq(projectUsers.projectId, projectId));
-    return await tx.delete(projects).where(eq(projects.id, projectId));
-  });
 }

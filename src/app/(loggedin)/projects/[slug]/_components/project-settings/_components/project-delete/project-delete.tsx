@@ -6,9 +6,14 @@ import { Button } from "~/ui/button";
 export function ProjectDelete(props: { projectId: string }) {
   const router = useRouter();
   async function handleDelete() {
-    await deleteProject(props.projectId);
-    router.push("/projects");
-    router.refresh();
+    const res = await deleteProject(props.projectId);
+    if (res.success) {
+      router.push("/projects");
+      router.refresh();
+    }
+    if (!res.success) {
+      alert("Oh no :/");
+    }
   }
   return (
     <div>
