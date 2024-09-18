@@ -9,10 +9,16 @@ export default async function Page(props: { params: { slug: string } }) {
   if (!success) return notFound();
   if (!project) notFound();
 
-  const TABS = [
+  const OWNER_TABS = [
     { name: "Tasks", component: <ProjectTasks projectId={project.id} /> },
     { name: "Settings", component: <ProjectSettings projectId={project.id} /> },
   ];
+
+  const NON_OWNER_TABS = [
+    { name: "Tasks", component: <ProjectTasks projectId={project.id} /> },
+  ];
+
+  const TABS = project.myRole === "owner" ? OWNER_TABS : NON_OWNER_TABS;
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-10 py-20">

@@ -2,24 +2,14 @@
 import { auth } from "@/auth";
 import { db } from "~/server/db";
 import { projects, projectUsers } from "~/server/db/schema";
+import type { ServerReponse, User } from "~/server/types";
 import { handleError } from "~/utils/handle-error";
-
-type ResponseBase<T> = {
-  success: true;
-  data: T;
-};
-
-type Error = {
-  success: false;
-  data: {
-    error: string;
-  };
-};
 
 type Project = {
   id: string;
   name: string | null;
   amOwner: boolean;
+  myRole: "owner" | "admin" | "member" | null | undefined;
   owners: {
     projectId: string;
     userId: string;
@@ -33,22 +23,12 @@ type Project = {
     };
   }[];
   members: {
-    projectId: string;
-    userId: string;
     role: "owner" | "admin" | "member" | null;
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      emailVerified: Date | null;
-      image: string | null;
-    };
+    user: User;
   }[];
 };
 
-export async function getProject(
-  id: string,
-): Promise<ResponseBase<Project> | Error> {
+export async function getProject(id: string): Promise<ServerReponse<Project>> {
   try {
     const session = await auth();
     if (!session) throw Error("Oh no");
@@ -76,9 +56,10 @@ export async function getProject(
 
     const owners = res.users.filter((x) => x.role === "owner");
     const members = res.users.filter((x) => x.role === "member");
-    const transformed = {
+    const transformed: Project = {
       id: res.id,
       name: res.name,
+      myRole: res.users.find((x) => x.userId === session.user.id)?.role,
       amOwner: owners?.map((x) => x.userId).includes(session.user.id),
       owners,
       members,

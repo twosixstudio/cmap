@@ -7,6 +7,7 @@ export function ProjectDelete(props: { projectId: string }) {
   const router = useRouter();
   async function handleDelete() {
     const res = await deleteProject(props.projectId);
+    console.log(res);
     if (res.success) {
       router.push("/projects");
       router.refresh();

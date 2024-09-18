@@ -32,3 +32,9 @@ export type Task = {
   }[];
   project: { name: string | null };
 };
+
+export type User = {
+  id: string;
+  name: string | null;
+  image: string | null;
+};
