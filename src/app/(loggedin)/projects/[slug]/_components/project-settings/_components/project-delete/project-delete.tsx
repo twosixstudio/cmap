@@ -8,11 +8,11 @@ export function ProjectDelete(props: { projectId: string }) {
   async function handleDelete() {
     await deleteProject(props.projectId);
     router.push("/projects");
-    router.refresh(); // i think
+    router.refresh();
   }
   return (
     <div>
-      <Button onClick={() => handleDelete()}>Delete</Button>
+      <Button onClick={() => handleDelete()}>Delete Project</Button>
     </div>
   );
 }

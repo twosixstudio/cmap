@@ -1,27 +1,41 @@
 import { notFound } from "next/navigation";
-import { InviteUsers } from "./_components/invite-users/invite-users";
-import { auth } from "@/auth";
-import { CreateTask } from "./_components/create-task/create-task";
-import { TaskList } from "./_components/task-list/task-list";
-import { ProjectDelete } from "./_components/project-delete/project-delete";
 import { getProject } from "~/server/services/project-services";
-import { getUsers } from "~/server/services/user-services";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/tabs";
+import { ProjectSettings } from "./_components/project-settings/project-settings";
+import { ProjectTasks } from "./_components/project-tasks/project-tasks";
 
 export default async function Page(props: { params: { slug: string } }) {
-  const session = await auth();
-  const users = await getUsers();
   const { data: project, success } = await getProject(props.params.slug);
   if (!success) return notFound();
   if (!project) notFound();
-  if (!session) return null;
+
+  const TABS = [
+    { name: "Tasks", component: <ProjectTasks projectId={project.id} /> },
+    { name: "Settings", component: <ProjectSettings projectId={project.id} /> },
+  ];
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-10 py-20">
-      <h1 className="border-b pb-1 text-2xl font-bold">{project.name}</h1>
-      <ProjectDelete projectId={project.id} />
-      <TaskList projectId={project.id} />
-      <CreateTask projectId={project.id} />
-      {project.amOwner && <InviteUsers users={users} project={project} />}
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-10 py-20">
+      <h1 className="text-2xl font-bold">{project.name}</h1>
+      <Tabs
+        defaultValue={TABS[0]?.name}
+        className="flex flex-col items-start gap-6"
+      >
+        <TabsList>
+          {TABS.map((x) => (
+            <TabsTrigger key={x.name} value={x.name}>
+              {x.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {TABS.map((x) => {
+          return (
+            <TabsContent className="w-full" key={x.name} value={x.name}>
+              {x.component}
+            </TabsContent>
+          );
+        })}
+      </Tabs>
     </div>
   );
 }

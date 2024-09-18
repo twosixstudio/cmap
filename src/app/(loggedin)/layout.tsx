@@ -4,7 +4,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-[100dvh] bg-slate-100">
+    <div className="min-h-[100dvh]">
       <NavBar />
       {children}
     </div>
