@@ -1,14 +1,19 @@
 // utils/errorHandler.ts
 
-export function handleError(error: unknown): {
-  success: false;
-  data: { error: string };
-} {
-  if (error instanceof Error) {
-    console.error("Error:", error); // You can add more logging here if needed
-    return { success: false, data: { error: error.message } };
-  } else {
-    console.error("Unexpected error:", error);
-    return { success: false, data: { error: "An unexpected error occurred." } };
+import { CustomError, type ServerError } from "~/server/types";
+
+export function handleError(error: unknown): ServerError {
+  console.log(error);
+  if (error instanceof CustomError) {
+    // If it's already a CustomError, return it directly
+    return { error: { message: error.message }, success: false };
   }
+
+  if (error instanceof Error) {
+    // Convert a generic Error to a CustomError
+    return { error: { message: error.message }, success: false };
+  }
+
+  // If the error is of an unknown type, handle it as an unexpected error
+  return { error: { message: "Unknown error occurred" }, success: false };
 }

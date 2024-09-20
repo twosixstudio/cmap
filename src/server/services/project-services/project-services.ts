@@ -2,7 +2,8 @@
 import { auth } from "@/auth";
 import { db } from "~/server/db";
 import { projects, projectUsers } from "~/server/db/schema";
-import type { ServerReponse, User } from "~/server/types";
+import { CustomError, type ServerReponse, type User } from "~/server/types";
+import { requireAuth } from "../auth-services";
 import { handleError } from "~/utils/handle-error";
 
 type Project = {
@@ -30,8 +31,7 @@ type Project = {
 
 export async function getProject(id: string): Promise<ServerReponse<Project>> {
   try {
-    const session = await auth();
-    if (!session) throw Error("Oh no");
+    const session = await requireAuth();
 
     const res = await db.query.projects.findFirst({
       where: (table, fn) => fn.eq(table.id, id),
@@ -43,15 +43,17 @@ export async function getProject(id: string): Promise<ServerReponse<Project>> {
       },
     });
 
-    if (!res) {
-      throw Error("No res");
-    }
+    if (!res) throw new CustomError("Project not found", 404);
 
     const isUserInProject = res.users.some(
       (user) => user.userId === session.user.id,
     );
+
     if (!isUserInProject) {
-      throw Error("Authenticated user is not part of the project");
+      throw new CustomError(
+        "Authenticated user is not part of the project",
+        401,
+      );
     }
 
     const owners = res.users.filter((x) => x.role === "owner");

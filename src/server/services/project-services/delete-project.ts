@@ -1,12 +1,20 @@
 "use server";
-import { auth } from "@/auth";
+
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { projects, projectUsers, tasks, taskUsers } from "~/server/db/schema";
-import type { ProjectUserRoleTypes, ServerReponse } from "~/server/types";
+import {
+  CustomError,
+  type ProjectUserRoleTypes,
+  type ServerReponse,
+} from "~/server/types";
 import { handleError } from "~/utils/handle-error";
+import { requireAuth } from "../auth-services";
 
 const DEFAULT_ALLOWED_ROLES: ProjectUserRoleTypes[] = ["owner"]; // Define default roles for deletion
+
+// Define CustomError class with additional information
+
 /**
  * Deletes a project along with all its related tasks, task users, and project users,
  * ensuring that the user has the appropriate permissions to do so.
@@ -27,13 +35,13 @@ const DEFAULT_ALLOWED_ROLES: ProjectUserRoleTypes[] = ["owner"]; // Define defau
  * @throws {Error} If the user is not authenticated, not authorized, or any part of the transaction fails.
  */
 
+// Modify deleteProject function to throw an error instead of returning
 export async function deleteProject(
   projectId: string,
 ): Promise<ServerReponse<{ message: string }>> {
   try {
     // Step 1: Authenticate the user
-    const session = await auth();
-    if (!session) throw Error("Authentication failed");
+    const session = await requireAuth();
 
     // Step 2: Check if the user has the correct role to delete the project
     await checkUserRoleForProject(
@@ -69,7 +77,7 @@ export async function deleteProject(
 
     return { success: true, data: res };
   } catch (error) {
-    // Catch and handle errors, returning the error response
+    // Log the error, then throw a custom error to be handled by the calling code
     return handleError(error);
   }
 }

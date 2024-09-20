@@ -3,15 +3,14 @@ import { auth } from "@/auth";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { projects, tasks, taskUsers, users } from "~/server/db/schema";
-import type { ServerReponse, ServerReponseSuccess, Task } from "~/server/types";
+import { CustomError, type ServerReponse, type Task } from "~/server/types";
 import { handleError } from "~/utils/handle-error";
 
 export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
   try {
     const session = await auth();
     if (!session) {
-      console.error("Authentication failed: no session");
-      throw new Error("User authentication failed.");
+      throw new CustomError("User authentication failed.", 401);
     }
 
     return await db.transaction(async (tx) => {
@@ -67,7 +66,7 @@ export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
           });
         }
         const task = taskMap.get(taskId)!;
-        console.log(task);
+
         task.users.push({
           id: row.userId,
           name: row.userName,
@@ -77,7 +76,7 @@ export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
         });
       });
 
-      const formatted: ServerReponseSuccess<Task[]> = {
+      const formatted: ServerReponse<Task[]> = {
         data: Array.from(taskMap.values()),
         success: true,
       };
@@ -85,6 +84,6 @@ export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
       return formatted;
     });
   } catch (error) {
-    return handleError(error);
+    throw handleError(error);
   }
 }

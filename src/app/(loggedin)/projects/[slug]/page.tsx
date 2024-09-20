@@ -5,8 +5,9 @@ import { ProjectSettings } from "./_components/project-settings/project-settings
 import { ProjectTasks } from "./_components/project-tasks/project-tasks";
 
 export default async function Page(props: { params: { slug: string } }) {
-  const { data: project, success } = await getProject(props.params.slug);
-  if (!success) return notFound();
+  const pro = await getProject(props.params.slug);
+  if (!pro.success) return notFound();
+  const project = pro.data;
   if (!project) notFound();
 
   const OWNER_TABS = [

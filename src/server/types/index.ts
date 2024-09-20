@@ -4,19 +4,25 @@ export type TaskStatusTypes = (typeof TASK_STATUSES)[number];
 export const PROJECT_USER_ROLES = ["owner", "admin", "member"] as const;
 export type ProjectUserRoleTypes = (typeof PROJECT_USER_ROLES)[number];
 
-export type ServerReponseSuccess<T> = {
-  success: true;
-  data: T;
-};
+export class CustomError extends Error {
+  statusCode: number;
 
-export type Error = {
-  success: false;
-  data: {
-    error: string;
-  };
-};
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.name = "CustomError";
+    this.statusCode = statusCode;
+    // Object.setPrototypeOf(this, CustomError.prototype);
+  }
+}
 
-export type ServerReponse<T> = ServerReponseSuccess<T> | Error;
+export type ServerError = { success: false; error: { message: string } };
+
+export type ServerReponse<T> =
+  | {
+      success: true;
+      data: T;
+    }
+  | ServerError;
 
 export type Task = {
   id: string;
