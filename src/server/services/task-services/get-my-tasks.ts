@@ -84,6 +84,6 @@ export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
       return formatted;
     });
   } catch (error) {
-    throw handleError(error);
+    return handleError(error);
   }
 }
