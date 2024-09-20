@@ -3,24 +3,34 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteProject } from "~/server/services/project-services";
 import { Button } from "~/ui/button";
+import useSWRMutation from "swr/mutation";
 
 export function ProjectDelete(props: { projectId: string }) {
   const router = useRouter();
-  async function handleDelete() {
-    const res = await deleteProject(props.projectId);
-    console.log(res);
-    if (res.success) {
-      router.push("/projects");
-      router.refresh();
-      toast(res.data.message);
-    }
-    if (!res.success) {
-      alert("Oh no :/");
-    }
-  }
+
+  const { trigger, isMutating } = useSWRMutation(
+    "/api/user",
+    () => deleteProject(props.projectId),
+    {
+      onSuccess: (res) => {
+        router.push("/projects");
+        router.refresh();
+        if (res.success) {
+          toast(res.data.message);
+        }
+        if (!res.success) {
+          alert(res.data.error);
+        }
+      },
+      onError: () => {
+        console.log("ok");
+      },
+    },
+  );
+
   return (
-    <div>
-      <Button onClick={() => handleDelete()}>Delete Project</Button>
-    </div>
+    <Button onClick={() => trigger()}>
+      {isMutating ? "Loading..." : "Delete Project"}
+    </Button>
   );
 }

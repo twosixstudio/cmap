@@ -3,10 +3,10 @@ import { auth } from "@/auth";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { projects, projectUsers, tasks, taskUsers } from "~/server/db/schema";
-import type { ServerReponse } from "~/server/types";
+import type { ProjectUserRoleTypes, ServerReponse } from "~/server/types";
 import { handleError } from "~/utils/handle-error";
 
-const DEFAULT_ALLOWED_ROLES = ["owner"]; // Define default roles for deletion
+const DEFAULT_ALLOWED_ROLES: ProjectUserRoleTypes[] = ["owner"]; // Define default roles for deletion
 /**
  * Deletes a project along with all its related tasks, task users, and project users,
  * ensuring that the user has the appropriate permissions to do so.
