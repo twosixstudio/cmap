@@ -2,7 +2,7 @@
 import { auth } from "@/auth";
 import { db } from "../../db";
 import { tasks, taskUsers } from "../../db/schema";
-import type { Task, TaskStatusTypes } from "../../types";
+import type { ServerReponse, Task, TaskStatusTypes } from "../../types";
 import { eq } from "drizzle-orm";
 import { handleError } from "~/utils/handle-error";
 
@@ -29,7 +29,10 @@ interface CreateTaskData {
   name: string;
 }
 
-export async function createTask(projectId: string, data: CreateTaskData) {
+export async function createTask(
+  projectId: string,
+  data: CreateTaskData,
+): Promise<ServerReponse<{ message: string }>> {
   const session = await auth();
   if (!session) {
     console.error("Authentication failed: no session");
@@ -64,7 +67,7 @@ export async function createTask(projectId: string, data: CreateTaskData) {
         userId: session.user.id,
       });
 
-      return { success: true, data: taskList[0] };
+      return { success: true, data: { message: "Task created" } };
     });
   } catch (error) {
     return handleError(error);

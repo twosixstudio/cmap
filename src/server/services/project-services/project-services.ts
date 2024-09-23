@@ -75,7 +75,7 @@ export async function getProject(id: string): Promise<ServerReponse<Project>> {
 // Define the function to create a project with multiple owners
 export async function createProject(
   name: string,
-): Promise<{ message: string } | undefined> {
+): Promise<ServerReponse<{ message: string }>> {
   try {
     const session = await auth();
     const userId = session?.user?.id;
@@ -87,8 +87,6 @@ export async function createProject(
       .insert(projects)
       .values({ name })
       .returning({ id: projects.id });
-
-    console.log(projectList, "-------");
 
     // Explicit check for undefined or empty array
     if (!projectList || projectList.length === 0) {
@@ -109,10 +107,10 @@ export async function createProject(
     });
 
     // Return success message
-    return { message: "ok" };
+    return { success: true, data: { message: "Project created" } };
   } catch (error) {
     // Log or handle the error appropriately
-    return { message: "Failed to create project" };
+    return handleError(error);
   }
 }
 
