@@ -7,7 +7,7 @@ export default function RootLayout({
   return (
     <div className="min-h-[100dvh]">
       <NavBar />
-      <Toaster />
+      <Toaster richColors={true} />
       {children}
     </div>
   );

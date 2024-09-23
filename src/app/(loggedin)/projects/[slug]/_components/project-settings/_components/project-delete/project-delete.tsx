@@ -15,7 +15,7 @@ export function ProjectDelete(props: { projectId: string }) {
         if (res.success) {
           router.push("/projects");
           router.refresh();
-          toast(res.data.message);
+          toast.success(res.data.message);
         } else {
           toast.error(res.error.message);
         }

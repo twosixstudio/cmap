@@ -1,17 +1,14 @@
 "use server";
-import { auth } from "@/auth";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { projects, tasks, taskUsers, users } from "~/server/db/schema";
-import { CustomError, type ServerReponse, type Task } from "~/server/types";
+import { type ServerReponse, type Task } from "~/server/types";
 import { handleError } from "~/utils/handle-error";
+import { requireAuth } from "../auth-services";
 
 export async function getMyTasks(): Promise<ServerReponse<Task[]>> {
   try {
-    const session = await auth();
-    if (!session) {
-      throw new CustomError("User authentication failed.", 401);
-    }
+    const session = await requireAuth();
 
     return await db.transaction(async (tx) => {
       // Step 1: Get task IDs assigned to the current user
