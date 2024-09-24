@@ -18,7 +18,11 @@ export async function createNote(props: {
 
     await db
       .insert(notes)
-      .values({ ...props.data, userId: session.user.id })
+      .values({
+        ...props.data,
+        userId: session.user.id,
+        projectId: props.projectId,
+      })
       .returning();
 
     return { success: true, data: { message: "Note created" } };

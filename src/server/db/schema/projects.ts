@@ -3,6 +3,7 @@ import { index, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createTable } from "../create-table";
 import { projectUsers } from "./project-users";
 import { tasks } from "./tasks";
+import { notes } from "./notes";
 
 export const projects = createTable(
   "project",
@@ -27,4 +28,5 @@ export const projects = createTable(
 export const projectsRelations = relations(projects, ({ many }) => ({
   users: many(projectUsers),
   tasks: many(tasks),
+  notes: many(notes),
 }));

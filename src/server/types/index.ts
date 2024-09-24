@@ -44,3 +44,12 @@ export type User = {
   name: string | null;
   image: string | null;
 };
+
+export type Note = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  userId: string;
+  projectId: string;
+};
