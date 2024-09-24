@@ -3,6 +3,7 @@ import { getProject } from "~/server/services/project-services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/tabs";
 import { ProjectSettings } from "./_components/project-settings/project-settings";
 import { ProjectTasks } from "./_components/project-tasks/project-tasks";
+import { ProjectNotes } from "./_components/project-notes/project-notes";
 
 export default async function Page(props: { params: { slug: string } }) {
   const pro = await getProject(props.params.slug);
@@ -13,10 +14,12 @@ export default async function Page(props: { params: { slug: string } }) {
   const OWNER_TABS = [
     { name: "Tasks", component: <ProjectTasks projectId={project.id} /> },
     { name: "Settings", component: <ProjectSettings projectId={project.id} /> },
+    { name: "Notes", component: <ProjectNotes projectId={project.id} /> },
   ];
 
   const NON_OWNER_TABS = [
     { name: "Tasks", component: <ProjectTasks projectId={project.id} /> },
+    { name: "Notes", component: <ProjectNotes projectId={project.id} /> },
   ];
 
   const TABS = project.myRole === "owner" ? OWNER_TABS : NON_OWNER_TABS;

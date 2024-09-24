@@ -6,3 +6,4 @@ export * from "./sessions";
 export * from "./verification-tokens";
 export * from "./project-users";
 export * from "./task-users";
+export * from "./notes";

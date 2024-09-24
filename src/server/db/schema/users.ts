@@ -4,6 +4,7 @@ import { accounts } from "./accounts";
 import { createTable } from "../create-table";
 import { projectUsers } from "./project-users";
 import { taskUsers } from "./task-users";
+import { notes } from "./notes";
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })
@@ -23,4 +24,5 @@ export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   projects: many(projectUsers),
   tasks: many(taskUsers),
+  notes: many(notes),
 }));
