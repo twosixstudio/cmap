@@ -4,9 +4,12 @@ export async function NoteList(props: { projectId: string }) {
   const data = await getProjectNotes({ projectId: props.projectId });
   if (!data.success) return <div>Oh no</div>;
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       {data.data.map((x) => (
-        <div key={x.id}>{x.title}</div>
+        <div className="rounded-md border p-4" key={x.id}>
+          <p className="font-bold">{x.title}</p>
+          <p>{x.content}</p>
+        </div>
       ))}
     </div>
   );
