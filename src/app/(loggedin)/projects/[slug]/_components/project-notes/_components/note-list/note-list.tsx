@@ -8,7 +8,7 @@ export async function NoteList(props: { projectId: string }) {
       {data.data.map((x) => (
         <div className="rounded-md border p-4" key={x.id}>
           <p className="font-bold">{x.title}</p>
-          <p>{x.content}</p>
+          <p className="whitespace-pre-wrap">{x.content}</p>
         </div>
       ))}
     </div>
